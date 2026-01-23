@@ -135,8 +135,11 @@ class FileSystem(schema.FileSystem):
 
         for template in old_templates:
             if 'FileSystem' in template.id and 'FileSystem_NFS_Client' not in template.id:
-                nfs_template = self.getRRDTemplateByName(
-                    template.id.replace('FileSystem', 'FileSystem_NFS_Client'))
+                target_id = template.id.replace('FileSystem', 'FileSystem_NFS_Client')
+                nfs_template = self.getRRDTemplateByName(target_id)
+
+                if not nfs_template:
+                    nfs_template = self.getRRDTemplateByName('FileSystem_NFS_Client')
 
                 if nfs_template:
                     new_templates.append(nfs_template)

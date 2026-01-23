@@ -76,3 +76,44 @@ class FileSystemTests(zenpacklib.TestCase):
         nfs4_templates = nfs4_fs.getRRDTemplates()
         self.assertEqual(len(nfs4_templates), 1)
         self.assertEqual(nfs4_templates[0].id, "FileSystem_NFS_Client")
+
+    def test_template_selection_fallback(self):
+        nfs_fs = FileSystem("nfs_test")
+        nfs_fs.mount = "/nfs_test"
+        nfs_fs.type = "nfs"
+        self.device.os.filesystems._setObject(nfs_fs.id, nfs_fs)
+        nfs_fs = self.device.os.filesystems.nfs_test
+
+        ext4_fs = FileSystem("ext4_test")
+        ext4_fs.mount = "/boot"
+        ext4_fs.type = "ext4"
+        self.device.os.filesystems._setObject(ext4_fs.id, ext4_fs)
+        ext4_fs = self.device.os.filesystems.ext4_test
+
+        manage_addRRDTemplate(self.dmd.Devices.rrdTemplates, "FileSystem")
+        manage_addRRDTemplate(self.dmd.Devices.rrdTemplates, "FileSystem_NFS_Client")
+
+        self.assertEqual([t.id for t in nfs_fs.getRRDTemplates()], ["FileSystem_NFS_Client"])
+        self.assertEqual([t.id for t in ext4_fs.getRRDTemplates()], ["FileSystem"])
+
+        manage_addRRDTemplate(self.dmd.Devices.rrdTemplates, "FileSystem-replacement")
+
+        # For EXT4: Should use the replacement.
+        self.assertEqual([t.id for t in ext4_fs.getRRDTemplates()], ["FileSystem-replacement"])
+
+        # For NFS: Should Fallback to FileSystem_NFS_Client.
+        self.assertEqual([t.id for t in nfs_fs.getRRDTemplates()], ["FileSystem_NFS_Client"])
+        manage_addRRDTemplate(self.dmd.Devices.rrdTemplates, "FileSystem_NFS_Client-replacement")
+
+        # For NFS: Should now find and use the specific NFS replacement.
+        self.assertEqual([t.id for t in nfs_fs.getRRDTemplates()], ["FileSystem_NFS_Client-replacement"])
+        manage_addRRDTemplate(self.dmd.Devices.rrdTemplates, "FileSystem-addition")
+        manage_addRRDTemplate(self.dmd.Devices.rrdTemplates, "FileSystem_NFS_Client-addition")
+
+        # For EXT4: Should have replacement AND addition
+        ext4_templates = sorted([t.id for t in ext4_fs.getRRDTemplates()])
+        self.assertEqual(ext4_templates, ["FileSystem-addition", "FileSystem-replacement"])
+
+        # For NFS: Should have NFS replacement AND NFS addition
+        nfs_templates = sorted([t.id for t in nfs_fs.getRRDTemplates()])
+        self.assertEqual(nfs_templates, ["FileSystem_NFS_Client-addition", "FileSystem_NFS_Client-replacement"])
