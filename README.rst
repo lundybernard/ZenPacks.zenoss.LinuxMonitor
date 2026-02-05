@@ -6,6 +6,13 @@ This ZenPack monitors the Linux Operating System.
 Releases
 --------
 
+.. _Version-2.3.6: https://delivery.zenoss.com/
+
+Version-2.3.6_
+   | Released on 2026/02/
+   | Compatible with Zenoss Cloud and Zenoss Resource Manager 6.9.0
+   | Requires `ZenPackLib ZenPack </product/zenpacks/zenpacklib>`_
+
 .. _Version-2.3.5: https://delivery.zenoss.com/
 
 Version-2.3.5_
@@ -832,6 +839,10 @@ Linux.
 
 Changes
 -------
+2.3.6
+
+- Fix NFS monitoring issue when FileSystem templates were renamed. (ZPS-9124)
+- Tested with Zenoss Cloud and Zenoss Resource Manager 6.9.0
 
 2.3.5
 
