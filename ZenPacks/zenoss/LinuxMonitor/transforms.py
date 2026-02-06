@@ -63,6 +63,7 @@ transform()
 # MD5 hex digests of /Perf/Filesystem transforms that we'll replace.
 PERF_FILESYSTEM_ORIGINAL_DIGESTS = (
     "1f4684a04169e0c65bd550fdf0bddbaf",  # Zenoss 2.5.0
+    "dba3851b0ab193f6bd007bbc6f0abb5e",  # Zenoss 2.5.0
     "86930c7a16f80fc1e1fd8971b9c9f3be",  # Zenoss 3
     "b28ad4d2d86b1f23229863a84bf54dec",  # Zenoss 5.1.1
     "18c01c20b29fef6f0b097a8bea443fa6",  # Zenoss 5.2.4
