@@ -132,14 +132,38 @@ class FileSystem(schema.FileSystem):
             return old_templates
 
         new_templates = []
+        processed_bases = set()
 
         for template in old_templates:
             if 'FileSystem' in template.id and 'FileSystem_NFS_Client' not in template.id:
-                nfs_template = self.getRRDTemplateByName(
-                    template.id.replace('FileSystem', 'FileSystem_NFS_Client'))
+                base_id = template.id
 
-                if nfs_template:
-                    new_templates.append(nfs_template)
+                if base_id.endswith('-replacement'):
+                    base_id = base_id[:-len('-replacement')]
+                elif base_id.endswith('-addition'):
+                    base_id = base_id[:-len('-addition')]
+
+                if base_id in processed_bases:
+                    continue
+
+                processed_bases.add(base_id)
+
+                new_base_id = base_id.replace('FileSystem', 'FileSystem_NFS_Client')
+
+                replacement_template = self.getRRDTemplateByName(new_base_id + '-replacement')
+
+                if not replacement_template:
+                    replacement_template = self.getRRDTemplateByName(new_base_id)
+
+                    if not replacement_template:
+                        replacement_template = self.getRRDTemplateByName('FileSystem_NFS_Client')
+
+                if replacement_template:
+                    new_templates.append(replacement_template)
+
+                addition_template = self.getRRDTemplateByName(new_base_id + '-addition')
+                if addition_template:
+                    new_templates.append(addition_template)
             else:
                 new_templates.append(template)
 
