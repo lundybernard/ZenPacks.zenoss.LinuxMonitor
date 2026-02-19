@@ -9,7 +9,7 @@ Releases
 .. _Version-2.3.6: https://delivery.zenoss.com/
 
 Version-2.3.6_
-   | Released on 2026/02/
+   | Released on 2026/02/19
    | Compatible with Zenoss Cloud and Zenoss Resource Manager 6.9.0
    | Requires `ZenPackLib ZenPack </product/zenpacks/zenpacklib>`_
 
